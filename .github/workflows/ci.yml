@@ -28,29 +28,32 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   # JOB 2: Build Docker Image
+  # JOB 2: Build Docker Image
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
       
-      # We need to set up Docker on the GitHub runner
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         
+      # THIS STEP IS NEW/MODIFIED
       - name: Set up Docker Buildx
+        id: buildx # Give this step an ID
         uses: docker/setup-buildx-action@v3
-
-      # This is the key step. We build the image
-      # We do NOT push it. We just prove it builds.
+        with:
+          platforms: linux/arm64 # Explicitly add arm64
+          
+      # THIS STEP IS MODIFIED
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
-          push: false # Do not push the image
-          load: false # Load the image into the runner
-          platform: linux/arm64
+          builder: ${{ steps.buildx.outputs.name }} # Use the builder we just set up
+          push: false 
+          platform: linux/arm64 # Build FOR arm64
           
       # Note: We cannot 'make test' here because this runner
       # does not have an NVIDIA GPU or a Jetson.
