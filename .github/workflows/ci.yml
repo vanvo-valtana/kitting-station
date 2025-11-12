@@ -1,10 +1,8 @@
 # ci.yml
 # This is our Continuous Integration workflow.
-# It proves our code is high-quality by running tests.
 
-name: CI - Lint and Test
+name: CI - Lint, Test, and Build
 
-# Trigger this workflow on any push to the 'main' branch
 on:
   push:
     branches: [ main ]
@@ -12,36 +10,48 @@ on:
     branches: [ main ]
 
 jobs:
-  lint-and-test:
-    # We will run this on a standard Ubuntu server
-    # Note: This is NOT our Jetson. This is a generic
-    # GitHub-hosted server.
+  # JOB 1: Run Linter
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Check out our project's code
       - name: Check out repository
         uses: actions/checkout@v4
-
-      # Step 2: Set up a Python environment
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # A reasonable, common version
-
-      # Step 3: Install our linter (flake8)
+          python-version: '3.10'
       - name: Install linter
-        run: |
-          pip install flake8
-          pip install flake8-docstrings
-          pip install flake8-import-order
-
-      # Step 4: Run the linter
-      # This checks our code for style errors, unused variables,
-      # and other "code smells".
+        run: pip install flake8 flake8-docstrings flake8-import-order
       - name: Run Flake8 linter
         run: |
-          # stop the build if there are Python syntax errors
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings.
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  # JOB 2: Build Docker Image
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      
+      # We need to set up Docker on the GitHub runner
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # This is the key step. We build the image
+      # We do NOT push it. We just prove it builds.
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false # Do not push the image
+          load: true # Load the image into the runner
+          
+      # Note: We cannot 'make test' here because this runner
+      # does not have an NVIDIA GPU or a Jetson.
+      # This build ONLY proves the Dockerfile installs
+      # all dependencies without error.
