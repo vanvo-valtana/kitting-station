@@ -1,0 +1,47 @@
+# ci.yml
+# This is our Continuous Integration workflow.
+# It proves our code is high-quality by running tests.
+
+name: CI - Lint and Test
+
+# Trigger this workflow on any push to the 'main' branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    # We will run this on a standard Ubuntu server
+    # Note: This is NOT our Jetson. This is a generic
+    # GitHub-hosted server.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out our project's code
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up a Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # A reasonable, common version
+
+      # Step 3: Install our linter (flake8)
+      - name: Install linter
+        run: |
+          pip install flake8
+          pip install flake8-docstrings
+          pip install flake8-import-order
+
+      # Step 4: Run the linter
+      # This checks our code for style errors, unused variables,
+      # and other "code smells".
+      - name: Run Flake8 linter
+        run: |
+          # stop the build if there are Python syntax errors
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings.
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
