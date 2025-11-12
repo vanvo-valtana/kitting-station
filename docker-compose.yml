@@ -4,14 +4,16 @@ services:
   app:
     # Our "Lab" container for JetPack 6.2.1
     # Ref: https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform-release-notes/pytorch-jetson-rel.html
-    image: nvcr.io/nvidia/pytorch:25.06-py3-igpu
+    # Ref2: https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-25-04.html#rel-25-04
+    build: .
     
     # Mount our project folder into the container
     volumes:
       - ./:/app
       
-    # Pass through the STM32 Nucleo board - ON GOING
-    
+    # Pass through the STM32 Nucleo board
+    devices:
+      - /dev/video0
       
     # This is the key: gives the container GPU access
     deploy:

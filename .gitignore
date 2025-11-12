@@ -8,3 +8,7 @@ venv/
 # Local config
 .idea/
 .vscode/
+
+
+# Data
+data/
