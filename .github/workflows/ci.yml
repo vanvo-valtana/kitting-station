@@ -53,7 +53,7 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }} # Use the builder we just set up
           push: false 
-          platform: linux/arm64 # Build FOR arm64
+          platforms: linux/arm64 # Build FOR arm64
           
       # Note: We cannot 'make test' here because this runner
       # does not have an NVIDIA GPU or a Jetson.
