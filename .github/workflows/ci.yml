@@ -49,7 +49,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: false # Do not push the image
-          load: true # Load the image into the runner
+          load: false # Load the image into the runner
           platform: linux/arm64
           
       # Note: We cannot 'make test' here because this runner
