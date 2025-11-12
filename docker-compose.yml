@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     # Our "Lab" container for JetPack 6.2.1
@@ -7,11 +5,28 @@ services:
     # Ref2: https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-25-04.html#rel-25-04
     build: .
     
+    # This solves all file permission problems on mounted volumes.
+    # Read the UID/GID variables from the .env file.
+    user: "${UID}:${GID}"
+
+
+    # Add user to the 'video' group to access /dev/video0
+    group_add:
+      - "${VIDEO_GID}"
+
+    # --- NVIDIA Performance Fixes ---
+    ipc: "host"
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    # ----------------------------------
+
+
     # Mount our project folder into the container
     volumes:
       - ./:/app
       
-    # Pass through the STM32 Nucleo board
+    
     devices:
       - /dev/video0
       

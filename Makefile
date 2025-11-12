@@ -9,7 +9,7 @@ build:
 
 # Remove all captured data
 clean-data:
-	sudo rm -rf data/*
+	rm -rf data/*
 
 # Launch a bash shell in the container
 shell:

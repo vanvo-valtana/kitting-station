@@ -27,6 +27,16 @@ It is a containerized, GPU-accelerated computer vision system for validating man
 * **Power:** A single 12V DC supply, stepped down to 5V via an LM2596 buck converter for the "REPORT" components.
 * **CI/CD:** GitHub Actions (Flake8 Linting & Cross-Platform `arm64` Docker Build)
 
+... (Technology Stack section) ...
+
+## Environment Setup
+
+This project uses a `.env` file to pass host-specific user and device permissions into the container.
+
+To set up your local environment, run this command **one time**:
+```bash
+cp example.env .env
+
 ## Local Development (Makefile)
 
 This project uses a `Makefile` to simplify all common Docker commands.

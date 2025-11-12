@@ -12,3 +12,6 @@ venv/
 
 # Data
 data/
+
+# Ignore local environment file
+.env
