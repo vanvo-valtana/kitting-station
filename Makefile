@@ -1,5 +1,4 @@
-# Define all targets as .PHONY so 'make' doesn't
-# get confused by a file named 'test' or 'build'
+# Define all targets as .PHONY
 .PHONY: all test build shell capture test-env test-cam
 
 # --- Development ---
@@ -16,11 +15,11 @@ shell:
 
 # Run the environment (PyTorch) test
 test-env:
-	docker compose run --rm app python3 /app/main.py
+	docker compose run --rm app python3 scripts/verify_env.py
 
 # Run the camera verification test
 test-cam:
-	docker compose run --rm app python3 /app/verify_cam.py
+	docker compose run --rm app python3 scripts/verify_cam.py
 
 # Run ALL tests
 test: test-env test-cam
@@ -29,4 +28,8 @@ test: test-env test-cam
 
 # Run the data capture script
 capture:
-	docker compose run --rm app python3 /app/capture.py
+	docker compose run --rm app python3 scripts/capture.py
+
+# Run the main application
+run:
+	docker compose run --rm app python3 main.py
